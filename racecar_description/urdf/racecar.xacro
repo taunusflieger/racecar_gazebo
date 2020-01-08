@@ -10,7 +10,7 @@
   <link name="chassis">
     <visual>
       <xacro:chassis_geometry/>
-      <material name="blue" />
+      <material name="green" />
     </visual>
   </link>
 
@@ -198,37 +198,36 @@
   </link>
 
   <joint name="hokuyo_joint" type="fixed">
-    <origin xyz="0.265 0.0 0.075" rpy="0 0 0"/>
+    <origin xyz="0.2 0.0 0.075" rpy="0 0 0"/>
     <parent link="chassis" />
     <child link="laser" />
     <axis xyz="0 0 1" />
   </joint>
 
+  <!-- NVIDIA Xavier -->
+  
 
-  <!-- zed camera -->
+  <!-- Original StereoLabs ZED Camera URDF file -->
   <link name="zed_camera_link">
-    <inertial>
-      <mass value="1e-5" />
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
-    </inertial>
-    <collision>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <geometry>
-        <box size="0.033 0.175 0.030"/>
-      </geometry>
-    </collision>
-    <visual>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <geometry>
-        <box size="0.033 0.175 0.030"/>
-      </geometry>
-      <material name="red"/>
-    </visual>
+    <joint name="zed_camera_center_joint" type="fixed">
+        <parent link="base_link"/>
+        <child link="zed_camera_center"/>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+    </joint>
+
+    <link name="zed_camera_center">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <mesh filename="package://zed_wrapper/urdf/models/ZED.stl" />
+            </geometry>
+            <material name="light_grey" />
+        </visual>
+    </link>
   </link>
 
   <joint name="zed_camera_joint" type="fixed">
-    <origin xyz="0.390 0 0.04" rpy="0 0 0"/>
+    <origin xyz="0.340 0 0.08" rpy="0 0 0"/>
     <parent link="chassis"/>
     <child link="zed_camera_link"/>
     <axis xyz="0 0 1" />
@@ -236,35 +235,43 @@
   </joint>
 
 
-  <!-- zed camera lenses -->
-  <!-- It seems these have to have a non-zero mass to have a camera attached? -->
-  <link name="camera_link"><!-- this needs to match the name in zed_wrapper/zed_tf.launch -->
-    <inertial>
-      <mass value="1e-5" />
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
-    </inertial>
-  </link>
-  <link name="zed_camera_right_link">
-    <inertial>
-      <mass value="1e-5" />
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
-    </inertial>
-  </link>
 
-  <joint name="zed_camera_left_joint" type="fixed">
-    <origin xyz="0 0.06 0" rpy="0 0 0"/>
-    <parent link="zed_camera_link"/>
-    <child link="camera_link"/>
-    <axis xyz="0 0 1" />
-  </joint>
-  <joint name="zed_camera_right_joint" type="fixed">
-    <origin xyz="0 -0.06 0" rpy="0 0 0"/>
-    <parent link="zed_camera_link"/>
-    <child link="zed_camera_right_link"/>
-    <axis xyz="0 0 1" />
-  </joint>
+<!-- Left Camera -->
+
+    <joint name="zed_left_camera_joint" type="fixed">
+        <parent link="zed_camera_center"/>
+        <child link="zed_left_camera_frame"/>
+        <origin xyz="0 0.06 0" rpy="0 0 0" />
+    </joint>
+
+    <link name="zed_left_camera_frame" />
+
+    <joint name="zed_left_camera_optical_joint" type="fixed">
+        <origin xyz="0 0 0" rpy="-1.57079632679 0.0 -1.57079632679"/>
+        <parent link="zed_left_camera_frame"/>
+        <child link="zed_left_camera_optical_frame"/>
+    </joint>
+
+    <link name="zed_left_camera_optical_frame"/>
+
+<!-- Right Camera -->
+
+    <joint name="zed_right_camera_joint" type="fixed">
+        <parent link="zed_camera_center"/>
+        <child link="zed_right_camera_frame"/>
+        <origin xyz="0 -0.06 0" rpy="0 0 0" />
+    </joint>
+
+    <link name="zed_right_camera_frame" />
+
+    <joint name="zed_right_camera_optical_joint" type="fixed">
+        <origin xyz="0 0 0" rpy="-1.57079632679 0.0 -1.57079632679"/>
+        <parent link="zed_right_camera_frame"/>
+        <child link="zed_right_camera_optical_frame"/>
+    </joint>
+
+    <link name="zed_right_camera_optical_frame"/>
+
 
   <!-- Add the remaining xacros -->
 
